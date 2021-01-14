@@ -1,7 +1,11 @@
-const path = require('path')
 const express = require("express");
+const history = require("connect-history-api-fallback");
 
 const app = express();
+
+// ensure any non-root routes serve /index.html
+// this is required to handle vue routes for html5 history mode
+app.use(history());
 
 app.get('/api/parts', (req, res) =>
   res.send({
@@ -167,7 +171,7 @@ app.get('/api/parts', (req, res) =>
   })
 );
 
-app.post('/api/cart', (req, res) => 
+app.post('/api/cart', (req, res) =>
   setTimeout(() => res.status(201).send(), 800)
 );
 
@@ -175,5 +179,7 @@ app.post('/api/sign-in', (req, res) => res.status(200).send());
 
 app.use('/api/images', express.static('images'));
 
-app.listen(8081, () => console.log('Server listening on port 8081!'));
+// serve up the dist dir
+app.use('/', express.static('dist', { index: 'index.html' }));
 
+app.listen(8081, () => console.log('Server listening on port 8081!'));
